@@ -30,8 +30,8 @@ static const char VALID_HEX [] = {'0', '1', '2', '3', '4', '5', '6', '7',
 
 
 /*===============================[ Prototypes ]==============================*/ 
-int hex_value (char c); 
 bool validate_hex (char *&hex);
+int hex_value (char c);
 
 
 /*===========================================================================*/
@@ -45,23 +45,25 @@ bool validate_hex (char *&hex);
 /*===========================================================================*/
 int main (int argc, char **argv)
 { 
-	// Our own copy of the hex value. 
-	char *tmp = argv [1];
-	char *hex = (char *) malloc (sizeof (strlen (argv [1]) + 1));
-	strcpy (hex, tmp);	
-	char null_term = '\0';
-	strcat (hex, &null_term);
+	int hex_count;
+	char *hex = argv [1];
+	
+
+	//	x |= (3 << 4); 
+	if (validate_hex (hex)) {
+		hex_count = strlen (hex) - 1;	
+		
+		while (hex_count >= 0) { 
+			
 
 
-
-	//	x |= (3 << 4);
-  //	printf ("%d \n", x);	
-
-	printf ("%s %s \n", "Before : ", hex); 
-	validate_hex (hex);
-	printf ("%s %s \n", "After  : ", hex);
-
-	free (hex);
+			hex_count--;
+		}
+	} 
+	
+	else 
+		printf ("***Error: Invalid Hexidecimal value. \n");
+	
 	return EXIT_SUCCESS;
 } /* end main () */
 
@@ -80,46 +82,19 @@ int main (int argc, char **argv)
 bool validate_hex (char *&hex)
 {
 	int index   = 0;
-	char *tmp   = hex;
-
+	
 	// Skip leading 0x 
-	if (hex [index] == '0' && (hex [index + 1] == 'x' || hex [index + 1] == 'X')) {
-		tmp += 2;		
-		return  (strtok (tmp, VALID_HEX) == NULL); 
-	}
+	if (hex [index] == '0' && (hex [index + 1] == 'x' || hex [index + 1] == 'X')) 
+		hex += 2;		
 
-	// We need to append the 0x
-	else{  
-
-		// Check for valid hexidecimal values. 
-		if (strtok (hex, VALID_HEX) != NULL) return false;
-		
-		// Append values. 
-		char hex_prefix [] = "0x";
-		char null_term  = '\0';
-
-		// Extra room for hex prefix and terminating character. 		
-		char *temp = (char *) malloc (sizeof (strlen (hex) + 3));
-
-		// Append hex prefix and terminate character. 
-		strcat (temp, hex_prefix);
-		strcat (temp, hex);	
-		strcat (temp, &null_term);
-
-		// Swap them out. 
-		free (hex);
-		hex = temp;
-		temp = NULL;
-	}
-
-	return true;
+	return  (strtok (hex, VALID_HEX) == NULL); 
 } /* end valid_hex () */ 
+
 
 
 /*===========================================================================*/
 /**
  * @brief Returns the integer value of the provided hexidecimal value. This 
- * @brief Method turned out not to be needed. 
  *
  * Preconditions: The provided character must be a valid hexidecimal value. 
  *
@@ -129,11 +104,13 @@ bool validate_hex (char *&hex)
 /*===========================================================================*/
 int hex_value (char c)
 {
-	int i;
 
-	for (i = 0; VALID_HEX [i] != '\0'; i++) 
-		if (toupper (c) == VALID_HEX [i]) break;
+		int i;
 
-	return i;	
+		for (i = 0; VALID_HEX [i]!= '\0'; i++)
+				if (toupper (c)== VALID_HEX [i])
+					break;
+					
+		return i;	
 } /* end hex_value () */
 
