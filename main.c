@@ -24,14 +24,28 @@
 
 
 /*===============================[ Valid Hex ]================================*/ 
+/**
+ * @brief Valid hexadecimal characters.
+ */
 static const char VALID_HEX [] = {'0', '1', '2', '3', '4', '5', '6', '7', 
 																  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
 																	'a', 'b', 'c', 'd', 'e', 'f'};
 
+/**
+ * @brief Number of bits per hex value.
+ */
+#define	NIBBLE 4
+
+/**
+ * @brief The binary32 exponent bias. 
+ */
+#define	BIAS 127
 
 /*===============================[ Prototypes ]==============================*/ 
 bool validate_hex (char *&hex);
-int hex_value (char c);
+int  hex_value    (char c);
+void calculate    (int  bits);
+int  get_exponent (int  bits);
 
 
 /*===========================================================================*/
@@ -45,22 +59,28 @@ int hex_value (char c);
 /*===========================================================================*/
 int main (int argc, char **argv)
 { 
-	int hex_count;
-	char *hex = argv [1];
+	int hex_count  = 0;
+	int hex_bits   = 0;
+	int hex_length = 0;
+	int index		   = 0;
+	char *hex      = argv [1];
+
+	// Check for valid hexadecimal value. 	
+	if (validate_hex (hex)) { 
+	 	index = hex_length = strlen (hex);	
+
+		// Convert the hex string to int bits.  
+		while (hex_count < hex_length)  
+		 	hex_bits |= (hex_value (hex [hex_count++]) << (--index * NIBBLE));
+
+		// Display the hexadecimal value.
+		printf ("%s %s", hex, " ==> ");	
 	
-
-	//	x |= (3 << 4); 
-	if (validate_hex (hex)) {
-		hex_count = strlen (hex) - 1;	
-		
-		while (hex_count >= 0) { 
-			
-
-
-			hex_count--;
-		}
+		// Calculate the powers. 
+  	calculate (hex_bits);			
 	} 
-	
+
+	// Invalid Hexidecimal value. 	
 	else 
 		printf ("***Error: Invalid Hexidecimal value. \n");
 	
@@ -113,4 +133,60 @@ int hex_value (char c)
 					
 		return i;	
 } /* end hex_value () */
+
+
+/*===========================================================================*/
+/**
+ * @brief 
+ *
+ * Preconditions: 
+ *
+ * @param bits The bits to perform calculations on.
+ */ 
+/*===========================================================================*/
+void calculate (int bits)
+{
+	int exponent    = get_exponent (bits);	;
+	int current_bit = 22;
+	int base        = 2;
+
+	printf ("%d %s %d %s", base, "^", exponent, "(1");
+
+	// Count back from bit-22.	
+	while (0) {
+		
+	}
+
+	printf ("%s \n", ")");
+} /* end calculate () */ 
+
+
+/*===========================================================================*/
+/**
+ * @brief Returns the exponent of the given IEEE754 floating point bits.  
+ *
+ * Preconditions: The given integer contains a bit patter as that of an IEEE 
+ * 							  754 (32-bit) single precision floating-point number.
+ * 							  It is assumed that the value is 32-bits, and bits 23 to 30
+ * 							  contain the BIASED exponent of 127.   
+ *
+ * @param bits The string of hex values to calculate. 
+ * @return The exponent of the floating point value. 
+ */ 
+/*===========================================================================*/
+int get_exponent (int bits)
+{
+	int exponent  = 0;
+ 	int exp_start = 23;		
+	int exp_end   = 30;
+	int index     = 1;
+	int mask      = 1;
+
+	while (exp_start <= exp_end) {
+		exponent |=  (((bits >> exp_start++) & mask) * index);	
+		index *= 2;
+	}
+
+	return (exponent - BIAS);
+} /* end get_exponent () */
 
