@@ -3,15 +3,15 @@
  * @author	John Steele <EMAIL:programjsteele {at} gmail {dot} com>
  * @version	1.0.0
  * @date
- * 	Created:	Sat 15 Jan 2011 07:12:37 PM PST \n
- * 	Last Update:	Sat 15 Jan 2011 07:12:37 PM PST
+ * Created:	Sat 15 Jan 2011 07:12:37 PM PST \n
+ * Last Update:	Sat 15 Jan 2011 07:12:37 PM PST
  */
 
 /*
  * Description:	This program takes a hexadecimal number from the command
- *					    line, which it interprets to be a IEEE single precision 
- *					    floating-point value and prints it out as 2 to the
- *					    exponent times the sum of powers of 2. 
+ *		line, which it interprets to be a IEEE single precision 
+ *		floating-point value and prints it out as 2 to the
+ *		exponent times the sum of powers of 2. 
  */
 
 
@@ -28,8 +28,8 @@
  * @brief Valid hexadecimal characters.
  */
 static const char VALID_HEX [] = {'0', '1', '2', '3', '4', '5', '6', '7', 
-																  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-																	'a', 'b', 'c', 'd', 'e', 'f'};
+				  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+				  'a', 'b', 'c', 'd', 'e', 'f'};
 
 /**
  * @brief Number of bits per hex value.
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 	int hex_count  = 0;
 	int hex_bits   = 0;
 	int hex_length = 0;
-	int index		   = 0;
+	int index      = 0;
 	char *hex      = argv [1];
 
 	// Check for valid hexadecimal value. 	
@@ -128,15 +128,14 @@ bool validate_hex (char *&hex)
  */ 
 /*===========================================================================*/
 int hex_value (char c)
-{
+{ 
+	int i;
 
-		int i;
-
-		for (i = 0; VALID_HEX [i]!= '\0'; i++)
-				if (toupper (c)== VALID_HEX [i])
-					break;
+	for (i = 0; VALID_HEX [i]!= '\0'; i++)
+		if (toupper (c)== VALID_HEX [i])
+			break;
 					
-		return i;	
+	return i;	
 } /* end hex_value () */
 
 
@@ -178,9 +177,9 @@ void calculate (int bits)
  * @brief Returns the exponent of the given IEEE754 floating point bits.  
  *
  * Preconditions: The given integer contains a bit patter as that of an IEEE 
- * 							  754 (32-bit) single precision floating-point number.
- * 							  It is assumed that the value is 32-bits, and bits 23 to 30
- * 							  contain the BIASED exponent of 127.   
+ * 		  754 (32-bit) single precision floating-point number.
+ * 		  It is assumed that the value is 32-bits, and bits 23 to 30
+ * 		  contain the BIASED exponent of 127.   
  *
  * @param bits The string of hex values to calculate. 
  * @return The exponent of the floating point value. 
