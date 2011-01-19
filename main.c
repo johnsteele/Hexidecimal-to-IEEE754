@@ -23,7 +23,7 @@
 
 
 
-/*===============================[ Valid Hex ]================================*/ 
+/*===========================================================================*/
 /**
  * @brief Valid hexadecimal characters.
  */
@@ -46,11 +46,25 @@ static const char VALID_HEX [] = {'0', '1', '2', '3', '4', '5', '6', '7',
  */
 #define	MASK 1
 
+/**
+ * @brief The low-bit of the exponent.
+ */
+#define	EXP_LOW 23
+
+/**
+ * @brief The high-bit of the exponent.
+ */
+#define	EXP_HIGH 30
+
+
 /*===============================[ Prototypes ]==============================*/ 
 bool validate_hex (char *&hex);
 int  hex_value    (char c);
 void calculate    (int  bits);
 int  get_exponent (int  bits);
+bool test_zero    (int  bits);
+bool test_infinity(int  bits);
+bool test_NaN     (int  bits);
 
 
 /*===========================================================================*/
@@ -78,11 +92,12 @@ int main (int argc, char **argv)
 		while (hex_count < hex_length)  
 		 	hex_bits |= (hex_value (hex [hex_count++]) << (--index * NIBBLE));
 
-		// Display the hexadecimal value.
-		printf ("%s %s", hex, " ==> ");	
-	
 		// Calculate the powers. 
-  	calculate (hex_bits);			
+		if (!test_zero(hex_bits) && !test_NaN(hex_bits) && !test_infinity(hex_bits)) {
+			// Display the hexadecimal value.
+			printf ("%s %s", hex, " ==> ");	
+			calculate (hex_bits);			
+		}
 	} 
 
 	// Invalid Hexidecimal value. 	
@@ -199,4 +214,93 @@ int get_exponent (int bits)
 
 	return (exponent - BIAS);
 } /* end get_exponent () */
+
+
+/*===========================================================================*/
+/**
+ * @brief Tests if the value is zero.
+ *
+ * @param bits The bits to evaluate. 
+ * @return Returns true if the exponent and mantissa are equal to zero. 
+ */ 
+/*===========================================================================*/
+bool test_zero (int bits)
+{ 
+	bool bit_set;
+	int index = 0;
+	int exponent = get_exponent (bits);	
+
+	if (exponent == -127) { // If no bits are on b/w 23 and 30.
+		while (index < EXP_LOW) {
+			bit_set = ((bits >> index) & MASK);
+			if (bit_set) {
+				// Denormalized if zero exponent, and non-zero mantissa.
+				// TODO: Add an the option to normalize the number. 	
+				printf ("This number is denormalized. \n");
+				return false; 
+			}
+			index++;
+		}
+	} 
+	else return false;
+
+	printf ("This number is Zero.\n");
+	return true;
+} /* end test_zero () */
+
+
+/*===========================================================================*/
+/**
+ * @brief Tests if the value is infinity.
+ *
+ * @param bits The bits to evaluate. 
+ * @return Returns true if exponent is 255 and mantissa is zero. 
+ */ 
+/*===========================================================================*/
+bool test_infinity(int bits)
+{ 
+	bool bit_set;
+	int index = 0;
+	int exponent = get_exponent (bits);
+	if (exponent == 128) {
+		while (index < EXP_LOW) {
+			bit_set = ((bits >> index) & MASK);
+			if (bit_set) {
+				return false;
+			}
+			index++;
+		}
+	}
+	else return false;
+
+	printf ("This number is Infinity.\n");
+	return true;
+} /* end test_infinity () */
+
+
+/*===========================================================================*/
+/**
+ * @brief Tests if the value is not-a-number. 
+ *
+ * @param bits The bits to evaluate. 
+ * @return Returns true if exponent is 255 and mantissa is non-zero. 
+ */ 
+/*===========================================================================*/
+bool test_NaN (int bits)
+{
+	bool bit_set;
+	int index = 0;
+	int exponent = get_exponent (bits);
+	if (exponent == 128) {
+		while (index < EXP_LOW) {
+			bit_set = ((bits >> index) & MASK);
+			if (bit_set) {
+				printf ("This value is NaN.\n");
+				return true;
+			}
+			index++;
+		}
+	}
+	return false; 
+} /* end test_NaN () */
 
