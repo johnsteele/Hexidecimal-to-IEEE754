@@ -41,6 +41,11 @@ static const char VALID_HEX [] = {'0', '1', '2', '3', '4', '5', '6', '7',
  */
 #define	BIAS 127
 
+/**
+ * @brief The mask used on bits. 
+ */
+#define	MASK 1
+
 /*===============================[ Prototypes ]==============================*/ 
 bool validate_hex (char *&hex);
 int  hex_value    (char c);
@@ -137,9 +142,8 @@ int hex_value (char c)
 
 /*===========================================================================*/
 /**
- * @brief 
- *
- * Preconditions: 
+ * @brief Calculates and prints the provided floating point bits as 2 to the 
+ * @brief exponent times the sum of powers of 2.
  *
  * @param bits The bits to perform calculations on.
  */ 
@@ -149,12 +153,20 @@ void calculate (int bits)
 	int exponent    = get_exponent (bits);	;
 	int current_bit = 22;
 	int base        = 2;
+	int index       = -1;
+	bool bit_set    = 0;
 
 	printf ("%d %s %d %s", base, "^", exponent, "(1");
 
 	// Count back from bit-22.	
-	while (0) {
+	while (current_bit >= 0) {
+		bit_set = ((bits >> current_bit) & MASK);
+
+		if (bit_set) 
+		 printf ("%s %d %s %d", " + ", base, "^", index);	
 		
+		current_bit--;	
+		index--;
 	}
 
 	printf ("%s \n", ")");
@@ -180,10 +192,9 @@ int get_exponent (int bits)
  	int exp_start = 23;		
 	int exp_end   = 30;
 	int index     = 1;
-	int mask      = 1;
 
 	while (exp_start <= exp_end) {
-		exponent |=  (((bits >> exp_start++) & mask) * index);	
+		exponent |=  (((bits >> exp_start++) & MASK) * index);	
 		index *= 2;
 	}
 
